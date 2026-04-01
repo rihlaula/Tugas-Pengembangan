@@ -1,0 +1,207 @@
+{
+  "name": "Tugas 3_Pengembangan",
+  "nodes": [
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-001",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1024,
+        320
+      ],
+      "id": "826921f2-4e31-4874-8a7f-26b78e0b02b3",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "QlhVMFwqp7Kfcwd5",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1jGupBkkhJcyoq00V4aEtjC9nz4PzT9UHj0GUVw641xA",
+          "mode": "list",
+          "cachedResultName": "n8n 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jGupBkkhJcyoq00V4aEtjC9nz4PzT9UHj0GUVw641xA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jGupBkkhJcyoq00V4aEtjC9nz4PzT9UHj0GUVw641xA/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1328,
+        304
+      ],
+      "id": "4bc54108-4b34-4bef-82bc-e4a3a1193746",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0t3qYXqgiObCeoa8",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1168,
+        320
+      ],
+      "id": "8cb3a38e-8439-4e70-a551-2c781f2f3e77",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        800,
+        96
+      ],
+      "id": "0b0d0c7b-7d99-42a9-9576-0a5059c7d0bb",
+      "name": "Telegram Trigger1",
+      "webhookId": "94caaeb6-8c30-4588-988a-dfc267d9bd06",
+      "credentials": {
+        "telegramApi": {
+          "id": "8U8cX4GCiwShsZm9",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "=Anda adalah asisten chatbot yang menjawab pertanyaan tentang Jenis Program Pelatihan, Nama Pelatihan atau Kursus di NFA,Deskripsi Pelatihan/Kursus di NFA dan harga/biaya.\n\nGunakan bahasa Indonesia yang santai dan panggil customer dengan sapaan 'kak' {{ $json.message.from.first_name}}.\n\nSilahkan ajukan pertanyaan anda tentang produk, harga, atau tempat pelatihan NF Academy.\nTerimakasih, Rihla\n\nTugasmu adalah:\n\n1. Sapa customer dengan \"Halo kak\" HANYA pada awal percakapan atau jika customer memulai topik baru/sapaan pembuka. Untuk balasan selanjutnya dalam satu alur percakapan, langsung berikan informasi tanpa sapaan pembuka lagi.\n\n2. Menjawab pertanyaan umum tentang Harga  Bootcamp, alamat, Nama Pelatihan Kursus NFA, Deskripsi Pelatihan dan informasi kontak.\n\n3. Kamu asisten pelatihan NF Academy, yang siap menjawab pertanyaandengan baik sesuaidengan bahasa yang di gunakan penanya. \n\n4. Berikan jawaban sesuai dengan tool \"Code Tool\".\nDi akhir tiap jawaban tambahkankalimat \"Terima kasih, Kak {{ $json.message.from.first_name}}.\n\n5. Jika kamu tidak menemukan informasi produk, harga, dan tempat pelatihan, jangan mengarang jawaban. Berikan jawaban, \"Maaf, sayabelum memiliki data yang Anda minta. Silakan lihat web nfacademy.id\n\n6. Gunakan tool Google Sheets untuk mencari data produk jika diperlukan.\n\n7. Jawab dengan jelas dan singkat berdasarkan data yang tersedia."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1088,
+        96
+      ],
+      "id": "f00bff0e-1bc2-42ed-a92c-553b2e7c0a77",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger1').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1472,
+        96
+      ],
+      "id": "dc56cec6-675b-4d3e-92b2-b282e2bd66bf",
+      "name": "Send a text message1",
+      "webhookId": "c04f7620-94fc-472b-8d44-3371aa2c7d09",
+      "credentials": {
+        "telegramApi": {
+          "id": "8U8cX4GCiwShsZm9",
+          "name": "Telegram account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "5544ab1c-ee78-4832-9110-d730f7f81a27",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4c1e1bed1bf06d1d5d2789cdf2ba250179980cbe0f7c3de02946a08e7711110b"
+  },
+  "id": "1xsV69eCZSNqxBwC",
+  "tags": []
+}
